@@ -1,0 +1,20 @@
+python: "3.9.12"
+
+build_dependencies:
+  - pip
+
+dependencies:
+  - matplotlib
+  - pytorch
+  - torchvision
+  - tqdm
+  - Pillow
+  - scipy
+  - pandas
+  - seaborn
+  - tensorboard
+  - PyYAML
+  - opencv
+  - pip:
+    - albumentations
+    - mlflow
