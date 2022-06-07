@@ -12,6 +12,7 @@ Usage:
     $ python path/to/train.py --data coco128.yaml --weights '' --cfg yolov5s.yaml --img 640  # from scratch
 """
 
+import re
 import argparse
 import math
 import os
@@ -55,6 +56,9 @@ from utils.loss import ComputeLoss
 from utils.metrics import fitness
 from utils.plots import plot_evolve, plot_labels
 from utils.torch_utils import EarlyStopping, ModelEMA, de_parallel, select_device, torch_distributed_zero_first
+
+import mlflow
+from mlflow.models.signature import infer_signature
 
 LOCAL_RANK = int(os.getenv('LOCAL_RANK', -1))  # https://pytorch.org/docs/stable/elastic/run.html
 RANK = int(os.getenv('RANK', -1))
@@ -109,6 +113,9 @@ def train(hyp, opt, device, callbacks):  # hyp is path/to/hyp.yaml or hyp dictio
     names = ['item'] if single_cls and len(data_dict['names']) != 1 else data_dict['names']  # class names
     assert len(names) == nc, f'{len(names)} names found for nc={nc} dataset in {data}'  # check
     is_coco = isinstance(val_path, str) and val_path.endswith('coco/val2017.txt')  # COCO dataset
+
+    # Log parameter
+    mlflow.log_params( hyp )
 
     # Model
     check_suffix(weights, '.pt')  # check weights
@@ -301,6 +308,10 @@ def train(hyp, opt, device, callbacks):  # hyp is path/to/hyp.yaml or hyp dictio
                 f'Using {train_loader.num_workers * WORLD_SIZE} dataloader workers\n'
                 f"Logging results to {colorstr('bold', save_dir)}\n"
                 f'Starting training for {epochs} epochs...')
+
+    # define signature for mlflow
+    signature = None
+
     for epoch in range(start_epoch, epochs):  # epoch ------------------------------------------------------------------
         callbacks.run('on_train_epoch_start')
         model.train()
@@ -347,6 +358,7 @@ def train(hyp, opt, device, callbacks):  # hyp is path/to/hyp.yaml or hyp dictio
                     ns = [math.ceil(x * sf / gs) * gs for x in imgs.shape[2:]]  # new shape (stretched to gs-multiple)
                     imgs = nn.functional.interpolate(imgs, size=ns, mode='bilinear', align_corners=False)
 
+
             # Forward
             with torch.cuda.amp.autocast(amp):
                 pred = model(imgs)  # forward
@@ -355,6 +367,13 @@ def train(hyp, opt, device, callbacks):  # hyp is path/to/hyp.yaml or hyp dictio
                     loss *= WORLD_SIZE  # gradient averaged between devices in DDP mode
                 if opt.quad:
                     loss *= 4.
+                
+                # create signature for mlflow model
+                if signature is None:
+                    signature = infer_signature( 
+                        imgs.cpu().numpy(),
+                        pred[0].detach().cpu().numpy()
+                    )
 
             # Backward
             scaler.scale(loss).backward()
@@ -423,6 +442,13 @@ def train(hyp, opt, device, callbacks):  # hyp is path/to/hyp.yaml or hyp dictio
                 torch.save(ckpt, last)
                 if best_fitness == fi:
                     torch.save(ckpt, best)
+                    # store model in mlflow
+                    mlflow.pytorch.log_model(
+                        ckpt['model'],
+                        opt.artifact_name,
+                        signature=signature
+                    )
+
                 if opt.save_period > 0 and epoch % opt.save_period == 0:
                     torch.save(ckpt, w / f'epoch{epoch}.pt')
                 del ckpt
@@ -441,6 +467,12 @@ def train(hyp, opt, device, callbacks):  # hyp is path/to/hyp.yaml or hyp dictio
         # with torch_distributed_zero_first(RANK):
         # if stop:
         #    break  # must break all DDP ranks
+
+        # Log
+        tags = ['train/box_loss', 'train/obj_loss', 'train/cls_loss', 'metrics/precision', 'metrics/recall', 'metrics/mAP_0.5', 'metrics/mAP_0.5:0.95','val/box_loss', 'val/obj_loss', 'val/cls_loss', 'x/lr0', 'x/lr1', 'x/lr2']
+        for x, tag in zip(list(mloss[:-1]) + list(results) + lr, tags):
+            tag = re.sub('[^a-zA-Z0-9\/\_\-\. ]', '-', tag)
+            mlflow.log_metric(tag, float(x))
 
         # end epoch ----------------------------------------------------------------------------------------------------
     # end training -----------------------------------------------------------------------------------------------------
@@ -516,11 +548,19 @@ def parse_opt(known=False):
     parser.add_argument('--bbox_interval', type=int, default=-1, help='W&B: Set bounding-box image logging interval')
     parser.add_argument('--artifact_alias', type=str, default='latest', help='W&B: Version of dataset artifact to use')
 
+    # mlflow argument
+    parser.add_argument('--exp_name', default='yolov5', help='mlflow experiment name')
+    parser.add_argument('--artifact_name', default='model', help='mlflow artifact name when saving model')
+
     opt = parser.parse_known_args()[0] if known else parser.parse_args()
     return opt
 
 
 def main(opt, callbacks=Callbacks()):
+
+    mlflow.set_experiment( opt.exp_name )
+    mlflow.start_run()
+
     # Checks
     if RANK in {-1, 0}:
         print_args(vars(opt))
@@ -648,13 +688,13 @@ def main(opt, callbacks=Callbacks()):
             callbacks = Callbacks()
             # Write mutation results
             print_mutation(results, hyp.copy(), save_dir, opt.bucket)
-
         # Plot results
         plot_evolve(evolve_csv)
         LOGGER.info(f'Hyperparameter evolution finished {opt.evolve} generations\n'
                     f"Results saved to {colorstr('bold', save_dir)}\n"
                     f'Usage example: $ python train.py --hyp {evolve_yaml}')
 
+    mlflow.end_run()
 
 def run(**kwargs):
     # Usage: import train; train.run(data='coco128.yaml', imgsz=320, weights='yolov5m.pt')

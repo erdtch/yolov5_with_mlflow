@@ -1,40 +1,102 @@
-# YOLOv5 requirements
-# Usage: pip install -r requirements.txt
-
-# Base ----------------------------------------
-matplotlib>=3.2.2
-numpy>=1.18.5
-opencv-python>=4.1.1
-Pillow>=7.1.2
-PyYAML>=5.3.1
-requests>=2.23.0
-scipy>=1.4.1  # Google Colab version
-torch>=1.7.0
-torchvision>=0.8.1
-tqdm>=4.41.0
-protobuf<=3.20.1  # https://github.com/ultralytics/yolov5/issues/8012
-
-# Logging -------------------------------------
-tensorboard>=2.4.1
-# wandb
-
-# Plotting ------------------------------------
-pandas>=1.1.4
-seaborn>=0.11.0
-
-# Export --------------------------------------
-# coremltools>=4.1  # CoreML export
-# onnx>=1.9.0  # ONNX export
-# onnx-simplifier>=0.3.6  # ONNX simplifier
-# scikit-learn==0.19.2  # CoreML quantization
-# tensorflow>=2.4.1  # TFLite export
-# tensorflowjs>=3.9.0  # TF.js export
-# openvino-dev  # OpenVINO export
-
-# Extras --------------------------------------
-ipython  # interactive notebook
-psutil  # system utilization
-thop  # FLOPs computation
-# albumentations>=1.0.3
-# pycocotools>=2.0  # COCO mAP
-# roboflow
+absl-py==1.1.0
+alembic==1.8.0
+appdirs @ file:///home/conda/feedstock_root/build_artifacts/appdirs_1603108395799/work
+asn1crypto @ file:///home/conda/feedstock_root/build_artifacts/asn1crypto_1647369152656/work
+asttokens==2.0.5
+backcall==0.2.0
+boto3==1.24.3
+botocore==1.27.3
+brotlipy @ file:///home/conda/feedstock_root/build_artifacts/brotlipy_1648854167867/work
+cachetools==5.2.0
+certifi==2022.5.18.1
+cffi @ file:///home/conda/feedstock_root/build_artifacts/cffi_1636046050867/work
+charset-normalizer @ file:///home/conda/feedstock_root/build_artifacts/charset-normalizer_1644853463426/work
+click @ file:///home/conda/feedstock_root/build_artifacts/click_1651215151197/work
+cloudpickle==2.1.0
+configparser @ file:///home/conda/feedstock_root/build_artifacts/configparser_1638573090458/work
+cryptography @ file:///home/conda/feedstock_root/build_artifacts/cryptography_1652967019182/work
+cycler==0.11.0
+databricks-cli==0.16.6
+decorator==5.1.1
+docker==5.0.3
+docker-pycreds==0.4.0
+entrypoints==0.4
+executing==0.8.3
+Flask==2.1.2
+fonttools==4.33.3
+gitdb==4.0.9
+GitPython==3.1.27
+google-auth==2.6.6
+google-auth-oauthlib==0.4.6
+greenlet==1.1.2
+grpcio==1.46.3
+gunicorn==20.1.0
+idna @ file:///home/conda/feedstock_root/build_artifacts/idna_1642433548627/work
+importlib-metadata @ file:///home/conda/feedstock_root/build_artifacts/importlib-metadata_1653252803161/work
+importlib-resources @ file:///home/conda/feedstock_root/build_artifacts/importlib_resources_1652715758048/work
+ipython==8.4.0
+itsdangerous==2.1.2
+jedi==0.18.1
+Jinja2 @ file:///home/conda/feedstock_root/build_artifacts/jinja2_1654302431367/work
+jmespath==1.0.0
+kiwisolver==1.4.2
+Mako==1.2.0
+Markdown==3.3.7
+MarkupSafe @ file:///home/conda/feedstock_root/build_artifacts/markupsafe_1648737547956/work
+matplotlib==3.5.2
+matplotlib-inline==0.1.3
+mlflow @ file:///home/conda/feedstock_root/build_artifacts/mlflow-split_1653741941135/work
+numpy==1.22.4
+oauthlib==3.2.0
+opencv-python==4.5.5.64
+packaging==21.3
+pandas==1.4.2
+parso==0.8.3
+pexpect==4.8.0
+pickleshare==0.7.5
+Pillow==9.1.1
+prometheus-client==0.14.1
+prometheus-flask-exporter==0.20.2
+prompt-toolkit==3.0.29
+protobuf==3.20.1
+psutil==5.9.1
+ptyprocess==0.7.0
+pure-eval==0.2.2
+pyasn1==0.4.8
+pyasn1-modules==0.2.8
+pycparser @ file:///home/conda/feedstock_root/build_artifacts/pycparser_1636257122734/work
+Pygments==2.12.0
+pyOpenSSL @ file:///home/conda/feedstock_root/build_artifacts/pyopenssl_1643496850550/work
+pyparsing @ file:///home/conda/feedstock_root/build_artifacts/pyparsing_1652235407899/work
+PySocks @ file:///home/conda/feedstock_root/build_artifacts/pysocks_1648857264958/work
+python-dateutil==2.8.2
+pytz @ file:///home/conda/feedstock_root/build_artifacts/pytz_1647961439546/work
+PyYAML @ file:///home/conda/feedstock_root/build_artifacts/pyyaml_1648757090803/work
+querystring-parser==1.2.4
+requests @ file:///home/conda/feedstock_root/build_artifacts/requests_1641580202195/work
+requests-oauthlib==1.3.1
+rsa==4.8
+s3transfer==0.6.0
+scipy==1.8.1
+seaborn==0.11.2
+six @ file:///home/conda/feedstock_root/build_artifacts/six_1620240208055/work
+smmap==5.0.0
+SQLAlchemy==1.4.37
+sqlparse==0.4.2
+stack-data==0.2.0
+tabulate==0.8.9
+tenacity @ file:///home/conda/feedstock_root/build_artifacts/tenacity_1626090218611/work
+tensorboard==2.9.0
+tensorboard-data-server==0.6.1
+tensorboard-plugin-wit==1.8.1
+thop==0.0.31.post2005241907
+torch==1.11.0
+torchvision==0.12.0
+tqdm==4.64.0
+traitlets==5.2.2.post1
+typing_extensions==4.2.0
+urllib3 @ file:///home/conda/feedstock_root/build_artifacts/urllib3_1647489083693/work
+wcwidth==0.2.5
+websocket-client==1.3.2
+Werkzeug==2.1.2
+zipp @ file:///home/conda/feedstock_root/build_artifacts/zipp_1649012893348/work
