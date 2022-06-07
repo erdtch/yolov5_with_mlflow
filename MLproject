@@ -1,0 +1,23 @@
+name: face-kyc-yolov5
+
+conda_env: yolov5_conda.yaml
+
+entry_points:
+  main:
+    parameters:
+      data_file: {type: string, default: "./data/face.yaml"}
+      # cfg_file: {type: string, default: "./models/yolov5s.yaml"} Train from scratch.
+      hyp_file: {type: str, default: "./data/hyps/hyp.noaug.yaml"}
+      batch_size: {type: int, default: 32}
+      workers: {type: int, default: 2}
+      epochs: {type: int, default: 400}
+      image_size: {type: int, default: 640}
+      model_name: {type: str, default: "yolov5m.pt"}
+    command: |
+      python train.py \
+      --data {data_file} \
+      --batch-size {batch_size} \
+      --epochs {epochs} \
+      --img {image_size} \
+      --weights {model_name} \
+      --workers {workers}
