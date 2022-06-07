@@ -19,17 +19,43 @@ class Albumentations:
         self.transform = None
         try:
             import albumentations as A
-            check_version(A.__version__, '1.0.3', hard=True)  # version requirement
 
             T = [
-                A.Blur(p=0.01),
-                A.MedianBlur(p=0.01),
-                A.ToGray(p=0.01),
-                A.CLAHE(p=0.01),
-                A.RandomBrightnessContrast(p=0.0),
-                A.RandomGamma(p=0.0),
-                A.ImageCompression(quality_lower=75, p=0.0)]  # transforms
-            self.transform = A.Compose(T, bbox_params=A.BboxParams(format='yolo', label_fields=['class_labels']))
+                A.OneOf([A.GaussNoise(), A.ISONoise()]),
+                A.RandomSizedBBoxSafeCrop(height=640, width=640),
+                A.OneOf(
+                    [
+                        A.MotionBlur(p=0.5),
+                        A.MedianBlur(blur_limit=3, p=0.3),
+                        A.Blur(blur_limit=3, p=0.5),
+                    ],
+                    p=0.8,
+                ),
+                A.OneOf(
+                    [
+                        A.CLAHE(clip_limit=2),
+                        A.Sharpen(p=0.4),
+                        A.RandomBrightnessContrast(p=0.5),
+                        A.ToGray(p=0.3),
+                        A.HueSaturationValue(p=0.3),
+                    ],
+                    p=1.0,
+                ),
+                A.Affine(
+                    scale=(0.8, 1.0),
+                    translate_percent=(0.0, 0.1),
+                    rotate=[-15, 15],
+                    shear=[-5, 5],
+                    p=0.85,
+                ),
+                A.JpegCompression(quality_lower=50, quality_upper=100),
+            ]  # transforms
+            self.transform = A.Compose(
+                T,
+                bbox_params=A.BboxParams(
+                    format="yolo", label_fields=["class_labels"], min_visibility=0.3
+                ),
+            )
 
             LOGGER.info(colorstr('albumentations: ') + ', '.join(f'{x}' for x in self.transform.transforms if x.p))
         except ImportError:  # package not installed, skip
