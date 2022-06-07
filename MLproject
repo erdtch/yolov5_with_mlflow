@@ -5,7 +5,7 @@ conda_env: yolov5_conda.yaml
 entry_points:
   main:
     parameters:
-      data_file: {type: string, default: "./data/face.yaml"}
+      data_file: {type: string, default: "../data/processed/data.yaml"}
       # cfg_file: {type: string, default: "./models/yolov5s.yaml"} Train from scratch.
       hyp_file: {type: str, default: "./data/hyps/hyp.noaug.yaml"}
       batch_size: {type: int, default: 32}
@@ -13,6 +13,7 @@ entry_points:
       epochs: {type: int, default: 400}
       image_size: {type: int, default: 640}
       model_name: {type: str, default: "yolov5m.pt"}
+      patience: {type: int, default: 20}
     command: |
       python train.py \
       --data {data_file} \
@@ -20,4 +21,5 @@ entry_points:
       --epochs {epochs} \
       --img {image_size} \
       --weights {model_name} \
-      --workers {workers}
+      --workers {workers} \
+      --patience: {patience}
