@@ -655,7 +655,7 @@ def train(hyp, opt, device, callbacks):  # hyp is path/to/hyp.yaml or hyp dictio
             "x/lr1",
             "x/lr2",
         ]
-        for x, tag in zip(list(mloss[:-1]) + list(results) + lr, tags):
+        for x, tag in zip(log_vals, tags):
             tag = re.sub("[^a-zA-Z0-9\/\_\-\. ]", "-", tag)
             mlflow.log_metric(tag, float(x))
 
