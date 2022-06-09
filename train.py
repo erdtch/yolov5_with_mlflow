@@ -188,6 +188,8 @@ def train(hyp, opt, device, callbacks):  # hyp is path/to/hyp.yaml or hyp dictio
 
     # Log parameter
     mlflow.log_params(hyp)
+    mlflow.set_tag('dataset_bucket',opt.dvc_bucket) 
+
 
     # Model
     check_suffix(weights, ".pt")  # check weights
@@ -863,6 +865,11 @@ def parse_opt(known=False):
         "--artifact_name",
         default="model",
         help="mlflow artifact name when saving model",
+    )
+    parser.add_argument(
+        "--dvc_bucket",
+        default="None",
+        help="dvc bucket to pull data from",
     )
 
     opt = parser.parse_known_args()[0] if known else parser.parse_args()

@@ -3,9 +3,9 @@ name: face-kyc-yolov5
 conda_env: yolov5_conda.yaml
 
 entry_points:
-  main:
+  train:
     parameters:
-      data_file: {type: string, default: "../data/processed/data.yaml"}
+      data_file: {type: string, default: "./data/processed/data.yaml"}
       # cfg_file: {type: string, default: "./models/yolov5s.yaml"} Train from scratch.
       hyp_file: {type: str, default: "./data/hyps/hyp.noaug.yaml"}
       batch_size: {type: int, default: 32}
@@ -17,6 +17,7 @@ entry_points:
       artifact_name: {type: str, default: "model"}
 
     command: |
+      dvc pull && \
       python train.py \
       --data {data_file} \
       --batch-size {batch_size} \
@@ -25,5 +26,7 @@ entry_points:
       --weights {model_name} \
       --patience {patience} \
       --workers {workers} \
-      --artifact_name {artifact_name}
+      --artifact_name {artifact_name} \
+      --dvc_bucket {dvc_bucket}
+  
      
