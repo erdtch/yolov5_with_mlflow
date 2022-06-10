@@ -15,7 +15,7 @@ entry_points:
       model_name: {type: str, default: "yolov5m.pt"}
       patience: {type: int, default: 20}
       artifact_name: {type: str, default: "model"}
-      dvc_bucket: {type: str, default: "mlflow/dvc/"}
+      addition_artifact: {type: str, default: "file"}
 
     command: |
       dvc pull && \
@@ -28,6 +28,6 @@ entry_points:
       --patience {patience} \
       --workers {workers} \
       --artifact_name {artifact_name} \
-      --dvc_bucket {dvc_bucket}
+      --dvc_bucket {addition_artifact:}
   
      
