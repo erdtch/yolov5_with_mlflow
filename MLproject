@@ -3,7 +3,7 @@ name: face-kyc-yolov5
 conda_env: yolov5_conda.yaml
 
 entry_points:
-  train:
+  main:
     parameters:
       data_file: {type: string, default: "./data/processed/data.yaml"}
       # cfg_file: {type: string, default: "./models/yolov5s.yaml"} Train from scratch.
@@ -15,6 +15,7 @@ entry_points:
       model_name: {type: str, default: "yolov5m.pt"}
       patience: {type: int, default: 20}
       artifact_name: {type: str, default: "model"}
+      dvc_bucket: {type: str, default: "mlflow/dvc/"}
 
     command: |
       dvc pull && \

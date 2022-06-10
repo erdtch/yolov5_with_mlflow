@@ -32,6 +32,8 @@ from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.optim import SGD, Adam, AdamW, lr_scheduler
 from tqdm import tqdm
 
+import shutil
+
 FILE = Path(__file__).resolve()
 ROOT = FILE.parents[0]  # YOLOv5 root directory
 if str(ROOT) not in sys.path:
@@ -187,9 +189,9 @@ def train(hyp, opt, device, callbacks):  # hyp is path/to/hyp.yaml or hyp dictio
     )  # COCO dataset
 
     # Log parameter
+    print(f'dvc bucket is {opt.dvc_bucket}')
     mlflow.log_params(hyp)
     mlflow.set_tag('dataset_bucket',opt.dvc_bucket) 
-
 
     # Model
     check_suffix(weights, ".pt")  # check weights
@@ -700,6 +702,12 @@ def train(hyp, opt, device, callbacks):  # hyp is path/to/hyp.yaml or hyp dictio
 
         callbacks.run("on_train_end", last, best, plots, epoch, results)
 
+    # save artifact to mlflow
+    print( f'artifact directory {opt.save_dir}' )
+    print( f'artifact path {opt.dvc_bucket}' )
+    shutil.rmtree( Path( opt.save_dir ) / "weights/" )
+    mlflow.log_artifacts( opt.save_dir, artifact_path=opt.dvc_bucket )
+    
     torch.cuda.empty_cache()
     return results
 
@@ -868,7 +876,7 @@ def parse_opt(known=False):
     )
     parser.add_argument(
         "--dvc_bucket",
-        default="None",
+        default="",
         help="dvc bucket to pull data from",
     )
 
