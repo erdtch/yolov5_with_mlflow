@@ -97,7 +97,7 @@ WORLD_SIZE = int(os.getenv("WORLD_SIZE", 1))
 os.environ["AWS_ACCESS_KEY_ID"] = "admin"
 os.environ["AWS_SECRET_ACCESS_KEY"] = "sample_key"
 os.environ["MLFLOW_S3_ENDPOINT_URL"] = "http://192.168.1.12:9000"
-os.environ["MLFLOW_TRACKING_URI"] = "http://192.168.1.12:5000"
+os.environ["MLFLOW_TRACKING_URI"] = "http://192.168.1.32:5000"
 
 
 def train(hyp, opt, device, callbacks):  # hyp is path/to/hyp.yaml or hyp dictionary
